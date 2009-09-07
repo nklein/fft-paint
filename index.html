@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <title>FFT Paint -- by Patrick Stein</title>
+    <link rel="stylesheet" type="text/css" href="fft_paint.css" />
+    <script type="text/javascript" src="fft_paint.js"></script>
+  </head>
+  <body onload="return initGUI();">
+    <div id="fft_paint_gui">
+      <div>
+	<div id="image_side">
+	  &nbsp;
+	</div>
+	<div id="control_side">
+          <div id="tool_bar">
+	    <input type="image" id="paint_controls_button"
+		   onclick="return selectTool('paint_controls');"
+		   src="false.png" width="64" height="64" border="0" />
+	    <input type="image" id="gradient_controls_button"
+		   onclick="return selectTool('gradient_controls');"
+		   src="false.png"  width="64" height="64" border="0" />
+	    <input type="image" id="blur_controls_button"
+		   onclick="return selectTool('blur_controls');"
+		   src="false.png" width="64" height="64" border="0" />
+	    <input type="image" id="curve_controls_button"
+		   onclick="return selectTool('curve_controls');"
+		   src="false.png" width="64" height="64" border="0" />
+	    <input type="image" id="file_controls_button"
+		   onclick="return selectTool('file_controls');"
+		   src="false.png" width="64" height="64" border="0" />
+	  </div>
+	  <div id="paint_controls" class="controls">
+	    <h2>Paint</h2>
+	  </div>
+	  <div id="gradient_controls" class="controls">
+	    <h2>Gradient</h2>
+	  </div>
+	  <div id="blur_controls" class="controls">
+	    <h2>Blur</h2>
+	  </div>
+	  <div id="curve_controls" class="controls">
+	    <h2>Curves</h2>
+	  </div>
+	  <div id="file_controls" class="controls">
+	    <h2>File</h2>
+	  </div>
+	</div>
+	<div class="clear">&nbsp;</div>
+      </div>
+    </div>
+  </body>
+</html>

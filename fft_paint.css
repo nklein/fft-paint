@@ -1,0 +1,95 @@
+body {
+    background-color: gray;
+    background-image: url('med-tile.png');
+}
+
+div#fft_paint_gui {
+    background-color: #996;
+    border: solid black 3px;
+    display: table;
+    margin: auto;
+    padding: 16px;
+}
+
+div#fft_paint_gui > div {
+}
+
+div#fft_paint_gui > div > div {
+    float: left;
+}
+
+div#image_side {
+    background-color: #ffc;
+    border: solid black 1px;
+    min-height: 540px;
+    min-width: 540px;
+    height: 540px;
+    width: 540px;
+}
+
+div#image_side > img,
+div#image_side > canvas {
+    margin: auto;
+}
+
+div#spacer_column {
+    width: 16px;
+}
+
+div#control_side {
+    height: 540px;
+    margin-left: 16px;
+    min-height: 540px;
+    position: relative;
+}
+
+div#tool_bar {
+    display: table-row;
+    width: 320px;
+}
+
+div#tool_bar > img {
+    height: 64px;
+    width: 64px;
+}
+
+div#control_side > img {
+    background-color: blue;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    width: 32px;
+}
+
+div.controls {
+    background-color: #ffc;
+    border: solid black 1px;
+    height: 453px;
+    margin-top: 8px;
+    padding: 8px;
+    width: 302px;
+    visibility: hidden;
+}
+
+div.controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+div.controls > h2 {
+    background-color: #330;
+    border: solid black 1px;
+    color: #cc9;
+    font-variant: small-caps;
+    margin-top: 0px;
+    text-align: center;
+}
+
+div.clear {
+    clear: both;
+    float: none;
+    height: 0;
+    line-height: 0;
+    width: 0;
+}
