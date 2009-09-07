@@ -29,7 +29,11 @@ div#image_side {
 
 div#image_side > img,
 div#image_side > canvas {
-    margin: auto;
+    margin: 14px;
+}
+
+div#image_side > canvas {
+    background-color: black;
 }
 
 div#spacer_column {
