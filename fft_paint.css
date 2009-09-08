@@ -40,7 +40,7 @@ div#image_side > canvas {
 
 div#control_side {
     position: relative;
-    width: 384px;
+    width: 405px;
 }
 
 div#tool_bar {
@@ -52,7 +52,7 @@ div#tool_bar {
 }
 
 div#tool_bar > div.tool_bar_button {
-    display: table-cell;
+    display: inline;
     margin: 0;
     position: relative;
     height: 64px;
@@ -67,7 +67,7 @@ div#tool_bar > div.tool_bar_button > input {
 
 div#tool_bar > div.tool_bar_button > img {
     position: absolute;
-    bottom: 0;
+    bottom: 4px;
     left: 0;
     z-index: 1;
 }

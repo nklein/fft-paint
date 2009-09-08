@@ -2,6 +2,7 @@
   <head>
     <title>FFT Paint -- by Patrick Stein</title>
     <link rel="stylesheet" type="text/css" href="fft_paint.css" />
+    <script type="text/javascript" src="fft.js"></script>
     <script type="text/javascript" src="fft_paint.js"></script>
   </head>
   <body onload="return initGUI();">
@@ -28,11 +29,13 @@
 		   onclick="return selectTool('fft_controls');">
 		<input type="image" id="fft_controls_button"
 		       src="false.png" width="64" height="64" border="0" />
+		<img src="fft.png" width="64" height="64" border="0" />
 	      </div>
 	      <div class="tool_bar_button"
 		   onclick="return selectTool('paint_controls');">
 		<input type="image" id="paint_controls_button"
 		       src="false.png" width="64" height="64" border="0" />
+		<img src="paint.png" width="64" height="64" border="0" />
 	      </div>
 	      <div class="tool_bar_button"
 		   onclick="return selectTool('gradient_controls');">
@@ -55,8 +58,8 @@
 	      <label for="input_selector"><strong>Input Image: </strong></label>
 	      <br />
 	      <select onchange="changeImage(this.options[this.selectedIndex].value);">
-		<option value="diagonal.jpg">Diagonals</option>
 		<option value="http://nklein.com/wp-content/uploads/2009/09/ppz.jpg">Isaac &amp; Grandpa</option>
+		<option value="diagonal.jpg">Diagonals</option>
 		<option value="http://nklein.com/wp-content/themes/nklein/images/med-tile.png">Squares</option>
 		<option value="http://nklein.com/wp-content/themes/nklein/images/logo.png">Logo</option>
 	      </select>
@@ -75,25 +78,50 @@
 	    </div>
 	    <div id="fft_controls" class="controls">
 	      <h2>Fast Fourier Transform</h2>
+	      <input type="button" value="FFT"
+		     onclick="doFFT( 'the_canvas', false )" />
+	      <input type="button" value="IFFT"
+		     onclick="doFFT( 'the_canvas', true )" />
+	      <p>Note: the data shown is not the actual
+		complex data.  It is just the magnitude of the complex
+		numbers.  The real floating point data is stored
+		behind the scenes.  When you paint, you are painting
+		on the real floating point data.</p>
+	      <p>Most folks only bother scaling the complex data
+		during the inverse FFT.  I have opted to scale on
+		both the FFT and the inverse FFT.  As such, if you
+		do the FFT twice in a row, you almost get back the
+		original.  The difference comes from the fact that
+		I shift the image with each FFT so that the low-order
+		frequencies are at the center of the image.  This
+		is the way most people are accustomed to seeing
+		them.  If I did not do this, the FFT image would
+		look like the IFFT of an original image looks here.</p>
 	    </div>
 	    <div id="paint_controls" class="controls">
 	      <h2>Paint</h2>
+	      <p>Coming soon...</p>
 	    </div>
 	    <div id="gradient_controls" class="controls">
 	      <h2>Gradient</h2>
+	      <p>Coming soon...</p>
 	    </div>
 	    <div id="blur_controls" class="controls">
 	      <h2>Blur</h2>
+	      <p>Coming soon...</p>
 	    </div>
 	    <div id="curve_controls" class="controls">
 	      <h2>Curves</h2>
+	      <p>Coming soon...</p>
 	    </div>
 	  </div>
 	</div>
       </div>
     </div>
     <div class="collapsed">
-      <img src="diagonal.jpg" id="original_image" width="128" height="128" />
+      <img id="original_image"
+	   src="http://nklein.com/wp-content/uploads/2009/09/ppz.jpg"
+	   width="256" height="512" />
     </div>
   </body>
 </html>
