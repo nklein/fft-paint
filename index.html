@@ -10,7 +10,10 @@
       <div>
         <div>
 	  <div id="image_side">
-	    <canvas id="the_canvas" width="256" height="256">
+	    <canvas id="the_canvas" width="256" height="256"
+		    onmousedown="return mousedown();"
+		    onmouseup="return mouseup();"
+		    onmousemove="return mousemove();">
 	      Your browser must support the Canvas tag.  Safari, Firefox,
 	      Chrome, Opera, and IE 7 or higher should work.
 	    </canvas>
