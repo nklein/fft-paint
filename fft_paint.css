@@ -13,8 +13,8 @@ div#fft_paint_gui {
 
 div#fft_paint_gui > div {
     display: table-row;
-    min-height: 470px;
-    height: 512px;
+    min-height: 565px;
+    height: 565px;
 }
 
 div#fft_paint_gui > div > div {
@@ -72,14 +72,6 @@ div#tool_bar > div.tool_bar_button > img {
     z-index: 1;
 }
 
-div#control_side > img {
-    background-color: blue;
-    height: 32px;
-    margin: 0;
-    padding: 0;
-    width: 32px;
-}
-
 div.controls {
     background-color: #ffc;
     border: solid black 1px;
@@ -92,7 +84,7 @@ div.controls {
     left: 0;
     right: 0;
     top: 70px;
-    height: 400px;
+    height: 450px;
 }
 
 div.controls > h2 {

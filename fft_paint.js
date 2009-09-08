@@ -7,6 +7,8 @@ var tools = new Array(
     'curve_controls'
 );
 
+var fftData = false;
+
 function selectTool( _id ) {
     var success = true;
 
@@ -62,7 +64,7 @@ function __prepareImage( _imgId, _canvasId ) {
     // nor too large)
     //
     var ww = __nextPowerOfTwo( Math.min( Math.max( iw, 128 ), 512 ) );
-    var hh = __nextPowerOfTwo( Math.min( Math.max( ih, 128 ), 256 ) );
+    var hh = __nextPowerOfTwo( Math.min( Math.max( ih, 128 ), 512 ) );
 
     canvas.width = ww;
     canvas.height = hh;
@@ -72,11 +74,8 @@ function __prepareImage( _imgId, _canvasId ) {
 	return false;
     }
 
-    context.fillStyle = '#000';
+    context.fillStyle = '#333';
     context.fillRect( 0, 0, ww, hh );
-
-    var ox = (ww - iw)/2;
-    var oy = (hh - ih)/2;
 
     //
     // if our image got bigger than we're letting our canvas get,
@@ -94,6 +93,9 @@ function __prepareImage( _imgId, _canvasId ) {
 	}
     }
 
+    var ox = (ww - iw)/2;
+    var oy = (hh - ih)/2;
+
     //
     // blit the image into the canvas
     //
@@ -105,13 +107,30 @@ function __prepareImage( _imgId, _canvasId ) {
 
 function changeImage( _url ) {
     var img = document.getElementById( 'original_image' );
+    fftData = false;
     img.src = _url;
     return __prepareImage( 'original_image', 'the_canvas' );
+}
+
+function copyCanvas( _canvasId ) {
+    var canvas = document.getElementById( _canvasId );
+
+    if ( ! canvas ) {
+	return false;
+    }
+
+    window.open(
+	canvas.toDataURL(),
+        "_blank",
+        "width=" + canvas.width + ",height=" + canvas.height
+    );
+
+    return true;
 }
 
 function initGUI() {
     var success = selectTool( tools[0] );
     success = success && __prepareImage( 'original_image', 'the_canvas' );
-    setTimeout("changeImage('http://americansportsblog.files.wordpress.com/2009/07/logan-tom-15-and-her-teammates-on-the-us-womens-olympic-volleyball-team.jpg');", 5000);
+    success = success && __prepareOutputLink( 'the_canvas', 'output_link' );
     return success;
 }

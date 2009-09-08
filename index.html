@@ -52,6 +52,26 @@
 	    </div>
 	    <div id="file_controls" class="controls">
 	      <h2>File</h2>
+	      <label for="input_selector"><strong>Input Image: </strong></label>
+	      <br />
+	      <select onchange="changeImage(this.options[this.selectedIndex].value);">
+		<option value="diagonal.jpg">Diagonals</option>
+		<option value="http://nklein.com/wp-content/uploads/2009/09/ppz.jpg">Isaac &amp; Grandpa</option>
+		<option value="http://nklein.com/wp-content/themes/nklein/images/med-tile.png">Squares</option>
+		<option value="http://nklein.com/wp-content/themes/nklein/images/logo.png">Logo</option>
+	      </select>
+	      <br />
+	      <br />
+	      <label for="input_box"><strong>Input Image URL: </strong></label>
+	      <br />
+	      <input type="text" value="(Enter URL Here)" size="45"
+		     onfocus="this.select(); return true;"
+		     onchange="changeImage(this.value);" />
+	      <br />
+	      <br />
+	      <strong>Save Canvas:</strong>
+	      <br />
+	      <a href="javascript:copyCanvas('the_canvas')">Snapshot</a>
 	    </div>
 	    <div id="fft_controls" class="controls">
 	      <h2>Fast Fourier Transform</h2>
