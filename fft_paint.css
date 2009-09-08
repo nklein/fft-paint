@@ -12,49 +12,64 @@ div#fft_paint_gui {
 }
 
 div#fft_paint_gui > div {
+    display: table-row;
+    min-height: 470px;
+    height: 512px;
 }
 
 div#fft_paint_gui > div > div {
-    float: left;
+    display: table-cell;
+    padding: 12px;
 }
 
 div#image_side {
     background-color: #ffc;
     border: solid black 1px;
-    min-height: 540px;
-    min-width: 540px;
-    height: 540px;
-    width: 540px;
+    padding: 12px;
 }
 
 div#image_side > img,
 div#image_side > canvas {
-    margin: 14px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 div#image_side > canvas {
     background-color: black;
 }
 
-div#spacer_column {
-    width: 16px;
-}
-
 div#control_side {
-    height: 540px;
-    margin-left: 16px;
-    min-height: 540px;
     position: relative;
+    width: 384px;
 }
 
 div#tool_bar {
     display: table-row;
-    width: 320px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
 }
 
-div#tool_bar > img {
+div#tool_bar > div.tool_bar_button {
+    display: table-cell;
+    margin: 0;
+    position: relative;
     height: 64px;
     width: 64px;
+}
+
+div#tool_bar > div.tool_bar_button > img,
+div#tool_bar > div.tool_bar_button > input {
+    height: 64px;
+    width: 64px;
+}
+
+div#tool_bar > div.tool_bar_button > img {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
 }
 
 div#control_side > img {
@@ -68,17 +83,16 @@ div#control_side > img {
 div.controls {
     background-color: #ffc;
     border: solid black 1px;
-    height: 453px;
-    margin-top: 8px;
     padding: 8px;
-    width: 302px;
     visibility: hidden;
 }
 
 div.controls {
     position: absolute;
-    bottom: 0;
     left: 0;
+    right: 0;
+    top: 70px;
+    height: 400px;
 }
 
 div.controls > h2 {
@@ -90,10 +104,10 @@ div.controls > h2 {
     text-align: center;
 }
 
-div.clear {
-    clear: both;
-    float: none;
+div.collapsed {
+    visibility: collapse;
     height: 0;
-    line-height: 0;
     width: 0;
+    line-height: 0;
+    overflow: hidden;
 }
