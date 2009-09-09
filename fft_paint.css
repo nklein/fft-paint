@@ -103,3 +103,10 @@ div.collapsed {
     line-height: 0;
     overflow: hidden;
 }
+
+canvas#real_color,
+canvas#imag_color,
+canvas#paint_brush,
+table#brush_palette img {
+    border: solid black 1pt;
+}

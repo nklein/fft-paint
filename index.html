@@ -61,7 +61,7 @@
 	      <label for="input_selector"><strong>Input Image: </strong></label>
 	      <br />
 	      <select onchange="changeImage(this.options[this.selectedIndex].value);">
-		<option value="http://nklein.com/wp-content/uploads/2009/09/ppz.jpg">Isaac &amp; Grandpa</option>
+		<option value="http://nklein.com/wp-content/uploads/2009/09/ppz.jpg" selected="selected">Isaac &amp; Grandpa</option>
 		<option value="diagonal.jpg">Diagonals</option>
 		<option value="http://nklein.com/wp-content/themes/nklein/images/med-tile.png">Squares</option>
 		<option value="http://nklein.com/wp-content/themes/nklein/images/logo.png">Logo</option>
@@ -106,10 +106,94 @@
 	    </div>
 	    <div id="paint_controls" class="controls">
 	      <h2>Paint</h2>
-	      <p>Right now, you can paint with one brush in red.</p>
-	      <p>Coming soon... you will be able to select your
-	         color, your brush, and your paint mode
-	         (additive, multiplicative, etc.)</p>
+	      <strong>Color (Hue/Sat and Value):</strong><br />
+	      <table width="100%">
+		<tr>
+		  <td>
+		    <strong>Real:</strong><br />
+		    <canvas width="32" height="32" id="real_color">
+		      Real color
+		    </canvas>
+		    &nbsp;&nbsp;&nbsp;
+		    <img src="color_wheel.png" width="64" height="64"
+			 align="center"
+			 onclick="selectHueAndSaturation(this,true);" />
+		    <input type="text" value="1.0"
+			   onchange="selectLuminance(this,true);"
+			   size="5" />
+		  </td>
+		  <td>
+		    <strong>Imaginary:</strong><br />
+		    <canvas width="32" height="32" id="imag_color">
+		      Imaginary color
+		    </canvas>
+		    &nbsp;&nbsp;&nbsp;
+		    <img src="color_wheel.png" width="64" height="64"
+			 align="center"
+			 onclick="selectHueAndSaturation(this,false);" />
+		    <input type="text" value="0.0"
+			   onchange="selectLuminance(this,false);"
+			   size="5" />
+		  </td>
+		</tr>
+	      </table>
+	      <br />
+	      <label for="paint_opacity"><strong>Opacity:</strong></label>
+	      <br />
+	      <input type="text" name="paint_opacity" value="0.2" size="5"
+		     onchange="selectOpacity(this);" />
+	      <br />
+	      <br />
+	      <label for="paint_mode"><strong>Painting Mode:</strong></label>
+	      <br />
+	      <select name="paint_mode"
+		      onchange="selectPaintMode(this.options[this.selectedIndex].value);">
+		<option value="normal" selected="selected">Normal</option>
+		<option value="add">Add</option>
+		<option value="multiply">Multiply</option>
+	      </select>
+	      <br />
+	      <br />
+	      <table width="100%">
+		<tr valign="top">
+		  <td>
+		    <strong>Current brush:&nbsp;&nbsp;</strong><br />
+		    <canvas width="64" height="64" id="paint_brush">
+		      Paint brush goes here.
+		    </canvas>
+		  </td>
+		  <td>
+		    <strong>Select a brush:</strong><br />
+		    <table id="brush_palette">
+		      <tr valign="top">
+			<td><img src="circle8.png" title="circle 8x8"
+			   onclick="setPaintBrush(this);"/></td>
+			<td><img src="circle16.png" title="circle 16x16"
+				 onclick="setPaintBrush(this);"/></td>
+			<td><img src="circle32.png" title="circle 32x32"
+				 onclick="setPaintBrush(this);"/></td>
+			<td><img src="circle48.png" title="circle 48x48"
+				 onclick="setPaintBrush(this);"/></td>
+			<td><img src="circle64.png" title="circle 64x64"
+				 onclick="setPaintBrush(this);"/></td>
+		      </tr>
+		      <tr valign="top">
+			<td><img src="gauss8.png" title="fuzzy 8x8"
+				 onclick="setPaintBrush(this);"/></td>
+			<td><img src="gauss16.png" title="fuzzy 16x16"
+				 onclick="setPaintBrush(this);"/></td>
+			<td><img src="gauss32.png" title="fuzzy 32x32"
+				 id="default_brush"
+				 onclick="setPaintBrush(this);"/></td>
+			<td><img src="gauss48.png" title="fuzzy 48x48"
+				 onclick="setPaintBrush(this);"/></td>
+			<td><img src="gauss64.png" title="fuzzy 64x64"
+				 onclick="setPaintBrush(this);"/></td>
+		      </tr>
+		    </table>
+		  </td>
+		</tr>
+	      </table>
 	    </div>
 	    <div id="gradient_controls" class="controls">
 	      <h2>Gradient</h2>
