@@ -11,213 +11,222 @@
   </head>
   <body onload="return initGUI();">
     <div id="fft_paint_gui">
-      <div>
-        <div>
-	  <div id="image_side">
-	    <canvas id="the_canvas" width="256" height="256"
-		    onmousedown="return mousedown();"
-		    onmouseup="return mouseup();"
-		    onmousemove="return mousemove();">
-	      Your browser must support the Canvas tag.  Safari, Firefox,
-	      Chrome, Opera, and IE 7 or higher should work.
-	    </canvas>
-	  </div>
-	</div>
-	<div>
-	  <div id="control_side">
-            <div id="tool_bar">
-	      <div class="tool_bar_button"
-		   onclick="return selectTool('file_controls');">
-		<input type="image" id="file_controls_button"
-		       src="false.png" width="64" height="64" border="0" />
-		<img src="file.png" width="64" height="64" border="0" />
+      <table>
+	<tr valign="top">
+          <td>
+	    <div id="image_side">
+	      <canvas id="the_canvas" width="256" height="256"
+		      onmousedown="return mousedown(event);"
+		      onmouseup="return mouseup(event);"
+		      onmousemove="return mousemove(event);">
+		Your browser must support the Canvas tag.  Safari, Firefox,
+		Chrome, Opera, and IE 7 or higher should work.
+	      </canvas>
+	    </div>
+	  </td>
+	  <td>
+	    <div id="control_side">
+              <div id="tool_bar">
+		<div class="tool_bar_button"
+		     onclick="return selectTool('file_controls');">
+		  <input type="image" id="file_controls_button"
+			 src="false.png" width="64" height="64" border="0" />
+		  <img src="file.png" width="64" height="64" border="0" />
+		</div>
+		<div class="tool_bar_button"
+		     onclick="return selectTool('fft_controls');">
+		  <input type="image" id="fft_controls_button"
+			 src="false.png" width="64" height="64" border="0" />
+		  <img src="fft.png" width="64" height="64" border="0" />
+		</div>
+		<div class="tool_bar_button"
+		     onclick="return selectTool('paint_controls');">
+		  <input type="image" id="paint_controls_button"
+			 src="false.png" width="64" height="64" border="0" />
+		  <img src="paint.png" width="64" height="64" border="0" />
+		</div>
+		<div class="tool_bar_button"
+		     onclick="return selectTool('gradient_controls');">
+		  <input type="image" id="gradient_controls_button"
+			 src="false.png"  width="64" height="64" border="0" />
+		</div>
+		<div class="tool_bar_button"
+		     onclick="return selectTool('blur_controls');">
+		  <input type="image" id="blur_controls_button"
+			 src="false.png" width="64" height="64" border="0" />
+		</div>
+		<div class="tool_bar_button"
+		     onclick="return selectTool('curve_controls');">
+		  <input type="image" id="curve_controls_button"
+			 src="false.png" width="64" height="64" border="0" />
+		</div>
 	      </div>
-	      <div class="tool_bar_button"
-		   onclick="return selectTool('fft_controls');">
-		<input type="image" id="fft_controls_button"
-		       src="false.png" width="64" height="64" border="0" />
-		<img src="fft.png" width="64" height="64" border="0" />
+	      <div id="file_controls" class="controls">
+		<h2>File</h2>
+		<label for="input_selector"><strong>Input Image: </strong></label>
+		<br />
+		<select onchange="changeImage(this.options[this.selectedIndex].value);">
+		  <option value="ppz.jpg" selected="selected">Isaac &amp; Grandpa</option>
+		  <option value="diagonal.jpg">Diagonals</option>
+		  <option value="med-tile.png">Squares</option>
+		  <option value="logo.png">Logo</option>
+		</select>
+		<br />
+		<br />
+		<label for="input_box"><strong>Input Image URL: </strong></label>
+		<br />
+		<input type="text" value="(Enter URL Here) [see note below]"
+		       size="45"  onfocus="this.select(); return true;"
+		       onchange="changeImage(this.value);" />
+		<p>Note: The input URL will not work under Firefox.  Firefox
+		   considers it a security violation for me to read
+		   pixels from an image that is on another site.
+		   I can blit the image into my own canvas, but then
+		   I cannot read my own canvas after that.  Feh.</p>
+		<br />
+		<strong>Save Canvas:</strong>
+		<br />
+		<a href="#"
+		   onclick="copyCanvas('the_canvas');">Snapshot</a>
+		<br />
+		<br />
+		<p>Here is the <a href="http://git.nklein.com/mas-961/fft_paint.git/">git repository</a> for this code.</p>
 	      </div>
-	      <div class="tool_bar_button"
-		   onclick="return selectTool('paint_controls');">
-		<input type="image" id="paint_controls_button"
-		       src="false.png" width="64" height="64" border="0" />
-		<img src="paint.png" width="64" height="64" border="0" />
+	      <div id="fft_controls" class="controls">
+		<h2>Fast Fourier Transform</h2>
+		<input type="button" value="FFT"
+		       onclick="doFFT( 'the_canvas', false )" />
+		<input type="button" value="IFFT"
+		       onclick="doFFT( 'the_canvas', true )" />
+		<p>Note: the data shown is not the actual
+		  complex data.  It is just the magnitude of the complex
+		  numbers.  The real floating point data is stored
+		  behind the scenes.  When you paint, you are painting
+		  on the real floating point data.</p>
+		<p>Most folks only bother scaling the complex data
+		  during the inverse FFT.  I have opted to scale on
+		  both the FFT and the inverse FFT.  As such, if you
+		  do the FFT twice in a row, you almost get back the
+		  original.  The difference comes from the fact that
+		  I shift the image with each FFT so that the low-order
+		  frequencies are at the center of the image.  This
+		  is the way most people are accustomed to seeing
+		  them.  If I did not do this, the FFT image would
+		  look like the IFFT of an original image looks here.</p>
 	      </div>
-	      <div class="tool_bar_button"
-		   onclick="return selectTool('gradient_controls');">
-		<input type="image" id="gradient_controls_button"
-		       src="false.png"  width="64" height="64" border="0" />
+	      <div id="paint_controls" class="controls">
+		<h2>Paint</h2>
+		<strong>Color (Hue/Sat and Value):</strong><br />
+		<table width="100%">
+		  <tr>
+		    <td>
+		      <strong>Real:</strong><br />
+		      <canvas width="32" height="32" id="real_color">
+			Real color
+		      </canvas>
+		      &nbsp;&nbsp;&nbsp;
+		      <img src="color_wheel.png" width="64" height="64"
+			   align="center"
+			   onclick="selectHueAndSaturation(this,true,event);"
+			   />
+		      <input type="text" value="1.0"
+			     onchange="selectLuminance(this,true);"
+			     size="5" />
+		    </td>
+		    <td>
+		      <strong>Imaginary:</strong><br />
+		      <canvas width="32" height="32" id="imag_color">
+			Imaginary color
+		      </canvas>
+		      &nbsp;&nbsp;&nbsp;
+		      <img src="color_wheel.png" width="64" height="64"
+			   align="center"
+			   onclick="selectHueAndSaturation(this,false,event);"
+			   />
+		      <input type="text" value="0.0"
+			     onchange="selectLuminance(this,false);"
+			     size="5" />
+		    </td>
+		  </tr>
+		</table>
+		<br />
+		<label for="paint_opacity"><strong>Opacity:</strong></label>
+		<br />
+		<input type="text" name="paint_opacity" value="0.2" size="5"
+		       onchange="selectOpacity(this);" />
+		<br />
+		<br />
+		<label for="paint_mode"><strong>Painting Mode:</strong></label>
+		<br />
+		<select name="paint_mode"
+			onchange="selectPaintMode(this.options[this.selectedIndex].value);">
+		  <option value="normal" selected="selected">Normal</option>
+		  <option value="add">Add</option>
+		  <option value="multiply">Multiply</option>
+		</select>
+		<br />
+		<br />
+		<table width="100%">
+		  <tr valign="top">
+		    <td>
+		      <strong>Current brush:&nbsp;&nbsp;</strong><br />
+		      <canvas width="64" height="64" id="paint_brush">
+			Paint brush goes here.
+		      </canvas>
+		    </td>
+		    <td>
+		      <strong>Select a brush:</strong><br />
+		      <table id="brush_palette" width="100%">
+			<tr valign="top">
+			  <td><img src="circle8.png" title="circle 8x8"
+				   onclick="setPaintBrush(this);"/></td>
+			  <td><img src="circle16.png" title="circle 16x16"
+				   onclick="setPaintBrush(this);"/></td>
+			  <td><img src="circle32.png" title="circle 32x32"
+				   onclick="setPaintBrush(this);"/></td>
+			  <td><img src="circle48.png" title="circle 48x48"
+				   onclick="setPaintBrush(this);"/></td>
+			  <td><img src="circle64.png" title="circle 64x64"
+				   onclick="setPaintBrush(this);"/></td>
+			</tr>
+			<tr valign="top">
+			  <td><img src="gauss8.png" title="fuzzy 8x8"
+				   onclick="setPaintBrush(this);"/></td>
+			  <td><img src="gauss16.png" title="fuzzy 16x16"
+				   onclick="setPaintBrush(this);"/></td>
+			  <td><img src="gauss32.png" title="fuzzy 32x32"
+				   id="default_brush"
+				   onclick="setPaintBrush(this);"/></td>
+			  <td><img src="gauss48.png" title="fuzzy 48x48"
+				   onclick="setPaintBrush(this);"/></td>
+			  <td><img src="gauss64.png" title="fuzzy 64x64"
+				   onclick="setPaintBrush(this);"/></td>
+			</tr>
+		      </table>
+		    </td>
+		  </tr>
+		</table>
 	      </div>
-	      <div class="tool_bar_button"
-		   onclick="return selectTool('blur_controls');">
-		<input type="image" id="blur_controls_button"
-		       src="false.png" width="64" height="64" border="0" />
+	      <div id="gradient_controls" class="controls">
+		<h2>Gradient</h2>
+		<p>Coming soon...</p>
 	      </div>
-	      <div class="tool_bar_button"
-		   onclick="return selectTool('curve_controls');">
-		<input type="image" id="curve_controls_button"
-		       src="false.png" width="64" height="64" border="0" />
+	      <div id="blur_controls" class="controls">
+		<h2>Blur</h2>
+		<p>Coming soon...</p>
+	      </div>
+	      <div id="curve_controls" class="controls">
+		<h2>Curves</h2>
+		<p>Coming soon...</p>
 	      </div>
 	    </div>
-	    <div id="file_controls" class="controls">
-	      <h2>File</h2>
-	      <label for="input_selector"><strong>Input Image: </strong></label>
-	      <br />
-	      <select onchange="changeImage(this.options[this.selectedIndex].value);">
-		<option value="http://nklein.com/wp-content/uploads/2009/09/ppz.jpg" selected="selected">Isaac &amp; Grandpa</option>
-		<option value="diagonal.jpg">Diagonals</option>
-		<option value="http://nklein.com/wp-content/themes/nklein/images/med-tile.png">Squares</option>
-		<option value="http://nklein.com/wp-content/themes/nklein/images/logo.png">Logo</option>
-	      </select>
-	      <br />
-	      <br />
-	      <label for="input_box"><strong>Input Image URL: </strong></label>
-	      <br />
-	      <input type="text" value="(Enter URL Here)" size="45"
-		     onfocus="this.select(); return true;"
-		     onchange="changeImage(this.value);" />
-	      <br />
-	      <br />
-	      <strong>Save Canvas:</strong>
-	      <br />
-	      <a href="javascript:copyCanvas('the_canvas')">Snapshot</a>
-	      <br />
-	      <br />
-	      <p>Here is the <a href="http://git.nklein.com/mas-961/fft_paint.git/">git repository</a> for this code.</p>
-	    </div>
-	    <div id="fft_controls" class="controls">
-	      <h2>Fast Fourier Transform</h2>
-	      <input type="button" value="FFT"
-		     onclick="doFFT( 'the_canvas', false )" />
-	      <input type="button" value="IFFT"
-		     onclick="doFFT( 'the_canvas', true )" />
-	      <p>Note: the data shown is not the actual
-		complex data.  It is just the magnitude of the complex
-		numbers.  The real floating point data is stored
-		behind the scenes.  When you paint, you are painting
-		on the real floating point data.</p>
-	      <p>Most folks only bother scaling the complex data
-		during the inverse FFT.  I have opted to scale on
-		both the FFT and the inverse FFT.  As such, if you
-		do the FFT twice in a row, you almost get back the
-		original.  The difference comes from the fact that
-		I shift the image with each FFT so that the low-order
-		frequencies are at the center of the image.  This
-		is the way most people are accustomed to seeing
-		them.  If I did not do this, the FFT image would
-		look like the IFFT of an original image looks here.</p>
-	    </div>
-	    <div id="paint_controls" class="controls">
-	      <h2>Paint</h2>
-	      <strong>Color (Hue/Sat and Value):</strong><br />
-	      <table width="100%">
-		<tr>
-		  <td>
-		    <strong>Real:</strong><br />
-		    <canvas width="32" height="32" id="real_color">
-		      Real color
-		    </canvas>
-		    &nbsp;&nbsp;&nbsp;
-		    <img src="color_wheel.png" width="64" height="64"
-			 align="center"
-			 onclick="selectHueAndSaturation(this,true);" />
-		    <input type="text" value="1.0"
-			   onchange="selectLuminance(this,true);"
-			   size="5" />
-		  </td>
-		  <td>
-		    <strong>Imaginary:</strong><br />
-		    <canvas width="32" height="32" id="imag_color">
-		      Imaginary color
-		    </canvas>
-		    &nbsp;&nbsp;&nbsp;
-		    <img src="color_wheel.png" width="64" height="64"
-			 align="center"
-			 onclick="selectHueAndSaturation(this,false);" />
-		    <input type="text" value="0.0"
-			   onchange="selectLuminance(this,false);"
-			   size="5" />
-		  </td>
-		</tr>
-	      </table>
-	      <br />
-	      <label for="paint_opacity"><strong>Opacity:</strong></label>
-	      <br />
-	      <input type="text" name="paint_opacity" value="0.2" size="5"
-		     onchange="selectOpacity(this);" />
-	      <br />
-	      <br />
-	      <label for="paint_mode"><strong>Painting Mode:</strong></label>
-	      <br />
-	      <select name="paint_mode"
-		      onchange="selectPaintMode(this.options[this.selectedIndex].value);">
-		<option value="normal" selected="selected">Normal</option>
-		<option value="add">Add</option>
-		<option value="multiply">Multiply</option>
-	      </select>
-	      <br />
-	      <br />
-	      <table width="100%">
-		<tr valign="top">
-		  <td>
-		    <strong>Current brush:&nbsp;&nbsp;</strong><br />
-		    <canvas width="64" height="64" id="paint_brush">
-		      Paint brush goes here.
-		    </canvas>
-		  </td>
-		  <td>
-		    <strong>Select a brush:</strong><br />
-		    <table id="brush_palette">
-		      <tr valign="top">
-			<td><img src="circle8.png" title="circle 8x8"
-			   onclick="setPaintBrush(this);"/></td>
-			<td><img src="circle16.png" title="circle 16x16"
-				 onclick="setPaintBrush(this);"/></td>
-			<td><img src="circle32.png" title="circle 32x32"
-				 onclick="setPaintBrush(this);"/></td>
-			<td><img src="circle48.png" title="circle 48x48"
-				 onclick="setPaintBrush(this);"/></td>
-			<td><img src="circle64.png" title="circle 64x64"
-				 onclick="setPaintBrush(this);"/></td>
-		      </tr>
-		      <tr valign="top">
-			<td><img src="gauss8.png" title="fuzzy 8x8"
-				 onclick="setPaintBrush(this);"/></td>
-			<td><img src="gauss16.png" title="fuzzy 16x16"
-				 onclick="setPaintBrush(this);"/></td>
-			<td><img src="gauss32.png" title="fuzzy 32x32"
-				 id="default_brush"
-				 onclick="setPaintBrush(this);"/></td>
-			<td><img src="gauss48.png" title="fuzzy 48x48"
-				 onclick="setPaintBrush(this);"/></td>
-			<td><img src="gauss64.png" title="fuzzy 64x64"
-				 onclick="setPaintBrush(this);"/></td>
-		      </tr>
-		    </table>
-		  </td>
-		</tr>
-	      </table>
-	    </div>
-	    <div id="gradient_controls" class="controls">
-	      <h2>Gradient</h2>
-	      <p>Coming soon...</p>
-	    </div>
-	    <div id="blur_controls" class="controls">
-	      <h2>Blur</h2>
-	      <p>Coming soon...</p>
-	    </div>
-	    <div id="curve_controls" class="controls">
-	      <h2>Curves</h2>
-	      <p>Coming soon...</p>
-	    </div>
-	  </div>
-	</div>
-      </div>
+	  </td>
+	</tr>
+      </table>
     </div>
     <div class="collapsed">
       <img id="original_image"
-	   src="http://nklein.com/wp-content/uploads/2009/09/ppz.jpg"
+	   src="ppz.jpg"
 	   width="256" height="512" />
     </div>
   </body>

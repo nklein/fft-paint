@@ -41,35 +41,6 @@ function __getNextPowerOfTwo( nn ) {
 }
 
 //
-// As mentioned above, we need the dimensions of our input image to be
-// powers of two.  Here, we figure out what the next power of two is
-// up from the width and height of the image.  Then, we make our canvas
-// that size.  Here, we stretch the image to fit the canvas.  We could,
-// instead, have centered the image in the canvas.  *shrug*
-//
-function prepImageForFFT( _imageId, _canvasId ) {
-    var image = document.getElementById( _imageId );
-    var canvas = document.getElementById( _canvasId );
-    if ( !image || !canvas ) {
-	return false;
-    }
-
-    var ww = __getNextPowerOfTwo( image.width );
-    var hh = __getNextPowerOfTwo( image.height );
-
-    canvas.width = ww;
-    canvas.height = hh;
-
-    var context = canvas.getContext( '2d' );
-    if ( !context ) {
-	return false;
-    }
-
-    context.drawImage( image, 0, 0, ww, hh );
-    return true;
-}
-
-//
 // I'm not even going to try to explain this code.  There are many
 // explanations online.  I worked from this one, mostly:
 //     http://www.librow.com/articles/article-10

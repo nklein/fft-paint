@@ -106,9 +106,10 @@ function updatePaintColor( _hsv, _rgb, _patchId ) {
     return true;
 }
 
-function selectHueAndSaturation( _ctrl, _real ) {
-    var xx = (event.clientX - _ctrl.x - _ctrl.width/2);
-    var yy = (event.clientY - _ctrl.y  - _ctrl.height/2);
+function selectHueAndSaturation( _ctrl, _real, _event ) {
+    var rect = _ctrl.getBoundingClientRect();
+    var xx = Math.round(_event.clientX - rect.left - _ctrl.width/2);
+    var yy = Math.round(_event.clientY - rect.top  - _ctrl.height/2);
 
     var hh = Math.round( 180.0 * Math.atan2( yy, xx ) / pi );
     var rr = Math.sqrt( xx*xx + yy*yy ) / (_ctrl.width/2);
@@ -207,7 +208,7 @@ function setPaintBrush( _img ) {
     return true;
 }
 
-function paintAtMouse() {
+function paintAtMouse( _event ) {
     var canvas = document.getElementById( 'the_canvas' );
     if ( !canvas ) {
 	return false;
@@ -230,10 +231,12 @@ function paintAtMouse() {
 	return false;
     }
 
+    var rect = canvas.getBoundingClientRect();
+
     var bh = paint_brush.length;
     var bw = paint_brush[0].length;
-    var mx = event.clientX - canvas.offsetLeft;
-    var my = event.clientY - canvas.offsetTop;
+    var mx = Math.round(_event.clientX - rect.left);
+    var my = Math.round(_event.clientY - rect.top);
 
     var bound_xx = Math.max( mx - Math.round(bw/2), 0 );
     var bound_ww = Math.min( mx + Math.round(bw/2), canvas.width ) - bound_xx;
@@ -276,7 +279,7 @@ function paintAtMouse() {
 // assign all of the mode handlers
 //
 function logMouseMove() {
-    window.status = "Mouse move: ("+ event.clientX + "," + event.clientY +")";
+    window.status = "Mouse move: ("+ window.event.clientX + "," + window.event.clientY +")";
 }
 
 modes.paint_controls = {

@@ -9,17 +9,14 @@ div#fft_paint_gui {
     display: table;
     margin: auto;
     padding: 16px;
+    min-height: 580px;
+    height: 580px;
 }
 
-div#fft_paint_gui > div {
-    display: table-row;
-    min-height: 565px;
-    height: 565px;
-}
-
-div#fft_paint_gui > div > div {
-    display: table-cell;
-    padding: 12px;
+div#fft_paint_gui > table,
+div#fft_paint_gui > table > tr,
+div#fft_paint_gui > table > td {
+    height: 100%;
 }
 
 div#image_side {

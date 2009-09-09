@@ -13,9 +13,10 @@ function __prepareImage( _imgId, _canvasId ) {
     }
 
     if ( !img.complete ) {
-	setTimeout("__prepareImage('"+ _imgId +"','"+ _canvasId +"');", 1000);
+	window.setTimeout(__prepareImage,1000,_imgId,_canvasId);
 	return true;
     }
+	window.status = "" + img.src;
 
     var iw = img.naturalWidth;
     var ih = img.naturalHeight;
@@ -75,7 +76,8 @@ function changeImage( _url ) {
     var img = document.getElementById( 'original_image' );
     fftData = false;
     img.src = _url;
-    return __prepareImage( 'original_image', 'the_canvas' );
+    window.setTimeout(__prepareImage,500,'original_image','the_canvas');
+    return true;
 }
 
 function copyCanvas( _canvasId ) {

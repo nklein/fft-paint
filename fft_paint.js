@@ -29,22 +29,23 @@ function selectTool( _id ) {
 //
 // handle mouse actions in the canvas if the current mode desires them
 //
-function mousedown() {
-    mouseDown = true;
-    return curMode && curMode.handleMouseDown && curMode.handleMouseDown();
+function mousedown( _event ) {
+    mouseDown = (_event.which == 1);
+    return curMode && curMode.handleMouseDown
+	           && curMode.handleMouseDown(_event);
 }
 
-function mouseup() {
+function mouseup( _event ) {
     mouseDown = false;
-    return curMode && curMode.handleMouseUp && curMode.handleMouseUp();
+    return curMode && curMode.handleMouseUp && curMode.handleMouseUp(_event);
 }
 
-function mousemove() {
+function mousemove( _event ) {
     return curMode && ( ( mouseDown )
 			?  ( curMode.handleMouseDrag
-			     && curMode.handleMouseDrag() )
+			     && curMode.handleMouseDrag(_event) )
 			:  ( curMode.handleMouseTrack
-			     && curMode.handleMouseTrack() )
+			     && curMode.handleMouseTrack(_event) )
 	              );
 }
 
