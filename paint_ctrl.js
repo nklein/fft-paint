@@ -284,5 +284,6 @@ function paintAtMouse( _event ) {
 // set up paint-mode event handlers
 //
 modes.paint_controls = {
+    handleMouseDown: paintAtMouse,
     handleMouseDrag: paintAtMouse,
 };

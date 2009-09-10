@@ -31,22 +31,26 @@ function selectTool( _id ) {
 //
 function mousedown( _event ) {
     mouseDown = (_event.which == 1);
-    return curMode && curMode.handleMouseDown
-	           && curMode.handleMouseDown(_event);
+    var success = curMode && curMode.handleMouseDown
+	                  && curMode.handleMouseDown(_event);
+    return true;
 }
 
 function mouseup( _event ) {
     mouseDown = false;
-    return curMode && curMode.handleMouseUp && curMode.handleMouseUp(_event);
+    var success = curMode && curMode.handleMouseUp
+	                  && curMode.handleMouseUp(_event);
+    return true;
 }
 
 function mousemove( _event ) {
-    return curMode && ( ( mouseDown )
-			?  ( curMode.handleMouseDrag
-			     && curMode.handleMouseDrag(_event) )
-			:  ( curMode.handleMouseTrack
-			     && curMode.handleMouseTrack(_event) )
-	              );
+    var success = curMode && ( ( mouseDown )
+			        ?  ( curMode.handleMouseDrag
+				     && curMode.handleMouseDrag(_event) )
+			       :  ( curMode.handleMouseTrack
+				    && curMode.handleMouseTrack(_event) )
+			     );
+    return true;
 }
 
 //
