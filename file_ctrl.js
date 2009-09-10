@@ -5,10 +5,11 @@ function __nextPowerOfTwo( _nn ) {
     return pp;
 }
 
-function __prepareImage( _imgId, _canvasId ) {
+function __prepareImage( _imgId, _canvasId_m, _canvasId_p ) {
     var img = document.getElementById( _imgId );
-    var canvas = document.getElementById( _canvasId );
-    if ( !img || !canvas ) {
+    var canvas_m = document.getElementById( _canvasId_m );
+    var canvas_p = document.getElementById( _canvasId_p );
+    if ( !img || !canvas_m || !canvas_p ) {
 	return false;
     }
 
@@ -16,7 +17,6 @@ function __prepareImage( _imgId, _canvasId ) {
 	window.setTimeout(__prepareImage,1000,_imgId,_canvasId);
 	return true;
     }
-	window.status = "" + img.src;
 
     var iw = img.naturalWidth;
     var ih = img.naturalHeight;
@@ -33,16 +33,23 @@ function __prepareImage( _imgId, _canvasId ) {
     var ww = __nextPowerOfTwo( Math.min( Math.max( iw, 128 ), 512 ) );
     var hh = __nextPowerOfTwo( Math.min( Math.max( ih, 128 ), 512 ) );
 
-    canvas.width = ww;
-    canvas.height = hh;
+    canvas_m.width = ww;
+    canvas_m.height = hh;
 
-    var context = canvas.getContext( '2d' );
-    if ( !context ) {
+    canvas_p.width = ww;
+    canvas_p.height = hh;
+
+    var context_m = canvas_m.getContext( '2d' );
+    var context_p = canvas_p.getContext( '2d' );
+    if ( !context_m || !context_p ) {
 	return false;
     }
 
-    context.fillStyle = '#333';
-    context.fillRect( 0, 0, ww, hh );
+    context_m.fillStyle = '#333';
+    context_m.fillRect( 0, 0, ww, hh );
+
+    context_p.fillStyle = '#808080';
+    context_p.fillRect( 0, 0, ww, hh );
 
     //
     // if our image got bigger than we're letting our canvas get,
@@ -66,8 +73,8 @@ function __prepareImage( _imgId, _canvasId ) {
     //
     // blit the image into the canvas
     //
-    context.drawImage( img,  0,  0, img.naturalWidth, img.naturalHeight,
-		            ox, oy, iw,               ih );
+    context_m.drawImage( img,  0,  0, img.naturalWidth, img.naturalHeight,
+			      ox, oy, iw,               ih );
 
     return true;
 }
@@ -76,7 +83,9 @@ function changeImage( _url ) {
     var img = document.getElementById( 'original_image' );
     fftData = false;
     img.src = _url;
-    window.setTimeout(__prepareImage,500,'original_image','the_canvas');
+    window.setTimeout( __prepareImage, 500,
+		      'original_image',
+		      'canvas_m', 'canvas_p');
     return true;
 }
 

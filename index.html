@@ -15,7 +15,15 @@
 	<tr valign="top">
           <td>
 	    <div id="image_side">
-	      <canvas id="the_canvas" width="256" height="256"
+	      <canvas id="canvas_m" width="256" height="256"
+		      onmousedown="return mousedown(event);"
+		      onmouseup="return mouseup(event);"
+		      onmousemove="return mousemove(event);">
+		Your browser must support the Canvas tag.  Safari, Firefox,
+		Chrome, Opera, and IE 7 or higher should work.
+	      </canvas>
+	      <br />
+	      <canvas id="canvas_p" width="256" height="256"
 		      onmousedown="return mousedown(event);"
 		      onmouseup="return mouseup(event);"
 		      onmousemove="return mousemove(event);">
@@ -87,7 +95,10 @@
 		<strong>Save Canvas:</strong>
 		<br />
 		<a href="#"
-		   onclick="copyCanvas('the_canvas');">Snapshot</a>
+		   onclick="copyCanvas('canvas_m');">Snapshot (Magnitude)</a>
+		<br />
+		<a href="#"
+		   onclick="copyCanvas('canvas_p');">Snapshot (Phase)</a>
 		<br />
 		<br />
 		<p>Here is the <a href="http://git.nklein.com/mas-961/fft_paint.git/">git repository</a> for this code.</p>
@@ -95,9 +106,9 @@
 	      <div id="fft_controls" class="controls">
 		<h2>Fast Fourier Transform</h2>
 		<input type="button" value="FFT"
-		       onclick="doFFT( 'the_canvas', false )" />
+		       onclick="doFFT( 'canvas_m', 'canvas_p', false )" />
 		<input type="button" value="IFFT"
-		       onclick="doFFT( 'the_canvas', true )" />
+		       onclick="doFFT( 'canvas_m', 'canvas_p', true )" />
 		<p>Note: the data shown is not the actual
 		  complex data.  It is just the magnitude of the complex
 		  numbers.  The real floating point data is stored

@@ -54,7 +54,7 @@ function mousemove( _event ) {
 //
 function initGUI() {
     return selectTool( tools[0] )
-	&& __prepareImage( 'original_image', 'the_canvas' )
+	&& __prepareImage( 'original_image', 'canvas_m', 'canvas_p' )
 	&& setPaintBrush( document.getElementById('default_brush') )
 	&& updatePaintColor( paint_hsv_r, paint_color_r, 'real_color' )
 	&& updatePaintColor( paint_hsv_i, paint_color_i, 'imag_color' )

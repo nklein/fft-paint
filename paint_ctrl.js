@@ -1,27 +1,32 @@
-function __normalPaintMode( _real, _imag, _result, _offset, _r_offset,
+function __normalPaintMode( _real, _imag, _result_m, _result_p,
+			    _offset, _r_offset,
 			    _clr_r, _clr_i, _alpha ) {
     for ( var kk=0; kk < 3; ++kk ) {
 	var index = _offset + kk;
 	_real[index] = (1.0 - _alpha) * _real[index] + _alpha * _clr_r[kk];
 	_imag[index] = (1.0 - _alpha) * _imag[index] + _alpha * _clr_i[kk];
 
-	_result[ _r_offset + kk ] = __clampPixel( _real[index], _imag[index] );
+	_result_m[ _r_offset + kk ] = __clampPixel(_real[index],_imag[index]);
+	_result_p[ _r_offset + kk ] = __clampPhase(_real[index],_imag[index]);
     }
 }
 
-function __addPaintMode( _real, _imag, _result, _offset, _r_offset,
-			    _clr_r, _clr_i, _alpha ) {
+function __addPaintMode( _real, _imag, _result_m, _result_p,
+			 _offset, _r_offset,
+			 _clr_r, _clr_i, _alpha ) {
     for ( var kk=0; kk < 3; ++kk ) {
 	var index = _offset + kk;
 	_real[index] += _alpha * _clr_r[kk];
 	_imag[index] += _alpha * _clr_i[kk];
 
-	_result[ _r_offset + kk ] = __clampPixel( _real[index], _imag[index] );
+	_result_m[ _r_offset + kk ] = __clampPixel(_real[index],_imag[index]);
+	_result_p[ _r_offset + kk ] = __clampPhase(_real[index],_imag[index]);
     }
 }
 
-function __multiplyPaintMode( _real, _imag, _result, _offset, _r_offset,
-			    _clr_r, _clr_i, _alpha ) {
+function __multiplyPaintMode( _real, _imag, _result_m, _result_p,
+			      _offset, _r_offset,
+			      _clr_r, _clr_i, _alpha ) {
     for ( var kk=0; kk < 3; ++kk ) {
 	var index = _offset + kk;
 	var rr = _real[index];
@@ -32,7 +37,8 @@ function __multiplyPaintMode( _real, _imag, _result, _offset, _r_offset,
 	_imag[index] = (1.0 - _alpha) * ii
 	    + _alpha * ( rr * _clr_i[kk] + ii * _clr_r[kk] );
 
-	_result[ _r_offset + kk ] = __clampPixel( _real[index], _imag[index] );
+	_result_m[ _r_offset + kk ] = __clampPixel(_real[index],_imag[index]);
+	_result_p[ _r_offset + kk ] = __clampPhase(_real[index],_imag[index]);
     }
 }
 
@@ -44,8 +50,6 @@ var paint_color_i = Array( 0.0, 0.0, 0.0 );
 var paint_opacity = 0.2;
 var paint_mode = __normalPaintMode;
 var paint_brush = false;
-
-var pi = 3.14159265358979323846264338327950288;
 
 function selectPaintMode( _mode ) {
     if ( _mode == 'normal' ) {
@@ -209,28 +213,26 @@ function setPaintBrush( _img ) {
 }
 
 function paintAtMouse( _event ) {
-    var canvas = document.getElementById( 'the_canvas' );
-    if ( !canvas ) {
+    var canvas_m = document.getElementById( 'canvas_m' );
+    var canvas_p = document.getElementById( 'canvas_p' );
+    if ( !canvas_m || !canvas_p ) {
 	return false;
     }
 
     if ( !fftData ) {
-	fftData = __createFFTDataFromCanvas( canvas.id );
+	fftData = __createFFTDataFromCanvas( canvas_m.id, canvas_p.id );
 	if ( !fftData ) {
 	    return false;
 	}
     }
 
-    canvas = document.getElementById( 'the_canvas' );
-    if ( !canvas ) {
+    var context_m = canvas_m.getContext('2d');
+    var context_p = canvas_p.getContext('2d');
+    if ( !context_m || !context_p ) {
 	return false;
     }
 
-    var context = canvas.getContext('2d');
-    if ( !context ) {
-	return false;
-    }
-
+    var canvas = _event.target;
     var rect = canvas.getBoundingClientRect();
 
     var bh = paint_brush.length;
@@ -246,8 +248,10 @@ function paintAtMouse( _event ) {
     if ( bound_ww < 1 || bound_hh < 1 ) {
 	return false;
     }
-    var rawResult = context.getImageData(bound_xx,bound_yy,bound_ww,bound_hh);
-    var result = rawResult.data;
+    var raw_m = context_m.getImageData(bound_xx,bound_yy,bound_ww,bound_hh);
+    var result_m = raw_m.data;
+    var raw_p = context_p.getImageData(bound_xx,bound_yy,bound_ww,bound_hh);
+    var result_p = raw_p.data;
 
     var real = fftData.real;
     var imag = fftData.imag;
@@ -261,8 +265,8 @@ function paintAtMouse( _event ) {
 		var xx = mx + bi - Math.round(bw/2);
 		if ( 0 <= xx && xx < canvas.width ) {
 		    var index = yoff + xx * 4;
-		    window.status = "(" + xx + "," + yy + ") = " + index;
-		    paint_mode( real, imag, result, index, r_index,
+		    paint_mode( real, imag, result_m, result_p,
+				index, r_index,
 				paint_color_r, paint_color_i,
 				paint_opacity * paint_brush[bj][bi] );
 		    r_index += 4;
@@ -271,17 +275,14 @@ function paintAtMouse( _event ) {
 	}
     }
 
-    context.putImageData( rawResult, bound_xx, bound_yy );
+    context_m.putImageData( raw_m, bound_xx, bound_yy );
+    context_p.putImageData( raw_p, bound_xx, bound_yy );
     return true;
 }
 
 //
-// assign all of the mode handlers
+// set up paint-mode event handlers
 //
-function logMouseMove() {
-    window.status = "Mouse move: ("+ window.event.clientX + "," + window.event.clientY +")";
-}
-
 modes.paint_controls = {
     handleMouseDrag: paintAtMouse,
 };

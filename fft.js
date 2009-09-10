@@ -254,8 +254,7 @@ function __performFFT( _real, _imag, _ww, _hh, _dx, _dy, _inverse ) {
 // then we use the data that's already in it rather than copying
 // from the canvas.  In this way, we can run multiple FFTs in a
 // row, and IFFT our way back through all of them even though
-// the image in the canvas after we're done with an FFT is just
-// a representation of the magnitude of the actual complex data.
+// the image in the canvas is significantly quantized.
 //
 function FFT( _fftData ) {
     if ( ! _fftData ) {

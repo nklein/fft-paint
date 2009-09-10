@@ -1,17 +1,19 @@
-function __createFFTDataFromCanvas( _canvasId ) {
-    var canvas = document.getElementById( _canvasId );
+function __createFFTDataFromCanvas( _canvasId_m, _canvasId_p ) {
+    var canvas_m = document.getElementById( _canvasId_m );
+    var canvas_p = document.getElementById( _canvasId_p );
 
-    if ( ! canvas ) {
+    if ( !canvas_m || !canvas_p ) {
 	return false;
     }
 
-    var context = canvas.getContext( '2d' );
-    if ( !context ) {
+    var context_m = canvas_m.getContext( '2d' );
+    var context_p = canvas_p.getContext( '2d' );
+    if ( !context_m || !context_p ) {
 	return false;
     }
 
-    var ww = canvas.width;
-    var hh = canvas.height;
+    var ww = canvas_m.width;
+    var hh = canvas_m.height;
 
     var real = new Array();
     var imag = new Array();
@@ -19,12 +21,17 @@ function __createFFTDataFromCanvas( _canvasId ) {
     real.length = ww * hh * 4;
     imag.length = ww * hh * 4;
 
-    var rawResult = context.getImageData( 0, 0, ww, hh );
-    var result = rawResult.data;
+    var raw_m = context_m.getImageData( 0, 0, ww, hh );
+    var result_m = raw_m.data;
 
-    for ( var pp=0; pp < result.length; ++pp ) {
-	real[ pp ] = result[ pp ] / 255.0;
-	imag[ pp ] = 0.0;
+    var raw_p = context_p.getImageData( 0, 0, ww, hh );
+    var result_p = raw_p.data;
+
+    for ( var pp=0; pp < result_m.length; ++pp ) {
+	var mag = result_m[ pp ] / 255.0;
+	var phase = ( result_p[pp] - 128 ) * pi / 128.0;
+	real[ pp ] = mag * Math.cos( phase );
+	imag[ pp ] = mag * Math.sin( phase );
     }
 
     return {
@@ -36,52 +43,67 @@ function __createFFTDataFromCanvas( _canvasId ) {
    };
 }
 
-function __fillCanvasFromFFTData( _canvasId, _fftData ) {
-    var canvas = document.getElementById( _canvasId );
+function __fillCanvasesFromFFTData( _canvasId_m, _canvasId_p, _fftData ) {
+    var canvas_m = document.getElementById( _canvasId_m );
+    var canvas_p = document.getElementById( _canvasId_p );
+
+    if ( !canvas_m || !canvas_p ) {
+	return false;
+    }
 
     var ww = _fftData.width;
     var hh = _fftData.height;
     var real = _fftData.real;
     var imag = _fftData.imag;
 
-    canvas.width = ww;
-    canvas.height = hh;
+    canvas_m.width = ww;
+    canvas_m.height = hh;
 
-    var context = canvas.getContext( '2d' );
-    if ( !context ) {
+    canvas_p.width = ww;
+    canvas_p.height = hh;
+
+    var context_m = canvas_m.getContext( '2d' );
+    var context_p = canvas_p.getContext( '2d' );
+    if ( !context_m || !context_p ) {
 	return false;
     }
 
-    var rawResult = context.getImageData( 0, 0, ww, hh );
-    var result = rawResult.data;
+    var raw_m = context_m.getImageData( 0, 0, ww, hh );
+    var result_m = raw_m.data;
+
+    var raw_p = context_p.getImageData( 0, 0, ww, hh );
+    var result_p = raw_p.data;
 
     //
     // then, we fill the canvas with the magnitude of
     // the complex FFT data
     //
-    for ( var pp=0; pp < result.length; pp += 4 ) {
+    for ( var pp=0; pp < result_m.length; pp += 4 ) {
 	//
 	// here, we do the red, green, and blue, but just
 	// hardcode the alpha
 	//
 	for ( var kk=0; kk < 3; ++kk ) {
 	    var index = pp + kk;
-	    result[ index ] = __clampPixel( real[ index ], imag[ index ] );
+	    result_m[ index ] = __clampPixel( real[ index ], imag[ index ] );
+	    result_p[ index ] = __clampPhase( real[ index ], imag[ index ] );
 	}
-	result[ pp + 3 ] = 255;
+	result_m[ pp + 3 ] = 255;
+	result_p[ pp + 3 ] = 255;
     }
 
     //
     // then, we blit our representation back to the canvas
     //
-    context.putImageData( rawResult, 0, 0 );
+    context_m.putImageData( raw_m, 0, 0 );
+    context_p.putImageData( raw_p, 0, 0 );
 
     return true;
 }
 
-function doFFT( _canvasId, _inverse ) {
+function doFFT( _canvasId_m, _canvasId_p, _inverse ) {
     if ( !fftData ) {
-	fftData = __createFFTDataFromCanvas( _canvasId );
+	fftData = __createFFTDataFromCanvas( _canvasId_m, _canvasId_p );
 	if ( !fftData ) {
 	    return false;
 	}
@@ -96,7 +118,7 @@ function doFFT( _canvasId, _inverse ) {
     }
 
     if ( success ) {
-	__fillCanvasFromFFTData( _canvasId, success );
+	__fillCanvasesFromFFTData( _canvasId_m, _canvasId_p, success );
 	fftData = success;
     }
 
