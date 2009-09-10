@@ -104,6 +104,7 @@ div.collapsed {
 canvas#real_color,
 canvas#imag_color,
 canvas#paint_brush,
-table#brush_palette img {
+table#brush_palette img,
+table#symmetries img {
     border: solid black 1pt;
 }

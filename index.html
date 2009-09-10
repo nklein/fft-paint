@@ -160,23 +160,66 @@
 		    </td>
 		  </tr>
 		</table>
+		<table width="100%">
+		  <tr valign="top">
+		    <td>
+		      <label for="paint_mode"
+			     ><strong>Painting Mode:</strong></label>
+		      <br />
+		      <select name="paint_mode"
+			      onchange="selectPaintMode(this.options[this.selectedIndex].value);">
+			<option value="normal"
+				selected="selected">Normal</option>
+			<option value="add">Add</option>
+			<option value="multiply">Multiply</option>
+		      </select>
+		    </td>
+		    <td>
+		      <label for="paint_opacity"
+			     ><strong>Opacity:</strong></label>
+		      <br />
+		      <input type="text" name="paint_opacity"
+			     value="0.2" size="5"
+			     onchange="selectOpacity(this);" />
+		    </td>
+		  </tr>
+		</table>
 		<br />
-		<label for="paint_opacity"><strong>Opacity:</strong></label>
-		<br />
-		<input type="text" name="paint_opacity" value="0.2" size="5"
-		       onchange="selectOpacity(this);" />
-		<br />
-		<br />
-		<label for="paint_mode"><strong>Painting Mode:</strong></label>
-		<br />
-		<select name="paint_mode"
-			onchange="selectPaintMode(this.options[this.selectedIndex].value);">
-		  <option value="normal" selected="selected">Normal</option>
-		  <option value="add">Add</option>
-		  <option value="multiply">Multiply</option>
-		</select>
-		<br />
-		<br />
+		<strong>Symmetry:</strong>
+		<table width="100%" id="symmetries">
+		  <tr>
+		    <td>
+		      <input type="checkbox" id="mirror_x" name="mirror_x"
+			     onchange="return reloadTransforms();" />
+		      <label for="mirror_x"><img src="mir_x.png"
+						 alt="X" /></label>
+		    </td>
+		    <td>
+		      <input type="checkbox" id="mirror_y" name="mirror_y"
+			     onchange="return reloadTransforms();" />
+		      <label for="mirror_y"><img src="mir_y.png"
+						 alt="Y" /></label>
+		    </td>
+		    <td>
+		      <input type="checkbox" id="mirror_r" name="mirror_r"
+			     onchange="return reloadTransforms();" />
+		      <label for="mirror_r"><img src="mir_r.png"
+						 alt="R" /></label>
+		    </td>
+		    <td>
+		      <input type="checkbox" id="mirror_d1" name="mirror_d1"
+			     onchange="return reloadTransforms();" />
+		      <label for="mirror_d1"><img src="mir_d1.png"
+						  alt="D1" /></label>
+		    </td>
+		    <td>
+		      <input type="checkbox" id="mirror_d2" name="mirror_d2"
+			     onchange="return reloadTransforms();" />
+		      <label for="mirror_d2"><img src="mir_d2.png"
+						  alt="D2" /></label>
+		    </td>
+		  </tr>
+		</table>
 		<table width="100%">
 		  <tr valign="top">
 		    <td>

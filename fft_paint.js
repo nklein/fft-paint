@@ -62,5 +62,6 @@ function initGUI() {
 	&& setPaintBrush( document.getElementById('default_brush') )
 	&& updatePaintColor( paint_hsv_r, paint_color_r, 'real_color' )
 	&& updatePaintColor( paint_hsv_i, paint_color_i, 'imag_color' )
+	&& reloadTransforms();
 	;
 }

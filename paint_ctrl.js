@@ -212,6 +212,147 @@ function setPaintBrush( _img ) {
     return true;
 }
 
+var transform_checkboxes = new Array(
+    'mirror_x',
+    'mirror_y',
+    'mirror_d1',
+    'mirror_d2',
+    'mirror_r'
+);
+var known_transforms = {
+    'identity':  new Array( new Array(  1,  0 ), new Array(  0,  1 ) ),
+    'mirror_x':  new Array( new Array( -1,  0 ), new Array(  0,  1 ) ),
+    'mirror_y':  new Array( new Array(  1,  0 ), new Array(  0, -1 ) ),
+    'mirror_d1': new Array( new Array(  0,  1 ), new Array(  1,  0 ) ),
+    'mirror_d2': new Array( new Array(  0, -1 ), new Array( -1,  0 ) ),
+    'mirror_r':  new Array( new Array( -1,  0 ), new Array(  0, -1 ) ),
+};
+var transforms = new Array( known_transforms['identity'] );
+
+
+function __transformedX( _transform, _xx, _yy ) {
+    return _transform[0][0] * _xx + _transform[0][1] * _yy;
+}
+function __transformedY( _transform, _xx, _yy ) {
+    return _transform[1][0] * _xx + _transform[1][1] * _yy;
+}
+
+function __multiplyTransforms( _aa, _bb ) {
+    var row1 = new Array( _aa[0][0] * _bb[0][0] + _aa[0][1] * _bb[1][0],
+			  _aa[0][0] * _bb[0][1] + _aa[0][1] * _bb[1][1] );
+    var row2 = new Array( _aa[1][0] * _bb[0][0] + _aa[1][1] * _bb[1][0],
+			  _aa[1][0] * _bb[0][1] + _aa[1][1] * _bb[1][1] );
+    return new Array( row1, row2 );
+}
+
+function __sameTransform( _aa, _bb ) {
+    var delta = Math.abs( _aa[0][0] - _bb[0][0] )
+	      + Math.abs( _aa[0][1] - _bb[0][1] )
+	      + Math.abs( _aa[1][0] - _bb[1][0] )
+	      + Math.abs( _aa[1][1] - _bb[1][1] )
+	      ;
+    return delta < 0.00001;
+}
+
+function __addTransform( _aa ) {
+    for ( var ii=0; ii < transforms.length; ++ii ) {
+	if ( __sameTransform( _aa, transforms[ii] ) ) {
+	    return false;
+	}
+    }
+
+    transforms[ transforms.length ] = _aa;
+    for ( var ii=0; ii < transforms.length; ++ii ) {
+	var cc = __multiplyTransforms( _aa, transforms[ii] );
+	__addTransform( cc );
+    }
+    return true;
+}
+
+function reloadTransforms() {
+    transforms = new Array( known_transforms['identity'] );
+    for ( var ii=0; ii < transform_checkboxes.length; ++ii ) {
+	var name = transform_checkboxes[ii];
+	var checkbox = document.getElementById( name );
+	if ( !checkbox ) {
+	    return false;
+	}
+	if ( checkbox.checked ) {
+	    __addTransform( known_transforms[ name ] );
+	}
+    }
+    return true;
+}
+
+function __paintAtPoint( _canvas_m, _canvas_p, _context_m, _context_p,
+			 _mx_orig, _my_orig, _transform )
+{
+    //
+    // transform the brush location based on the symmetry transform
+    //
+    var _mx2_orig = _mx_orig - _canvas_m.width/2;
+    var _my2_orig = _my_orig - _canvas_m.height/2;
+
+    var mx = __transformedX( _transform, _mx2_orig, _my2_orig )
+	            + canvas_m.width/2;
+    var my = __transformedY( _transform, _mx2_orig, _my2_orig )
+	            + canvas_m.height/2;
+
+    var bw_orig = paint_brush[0].length;
+    var bh_orig = paint_brush.length;
+
+    var bw = Math.abs( __transformedX( _transform, bw_orig, bh_orig ) );
+    var bh = Math.abs( __transformedY( _transform, bw_orig, bh_orig ) );
+
+    var bound_xx = Math.max(mx - Math.round(bw/2), 0);
+    var bound_ww = Math.min(mx + Math.round(bw/2), canvas_m.width) - bound_xx;
+    var bound_yy = Math.max(my - Math.round(bh/2), 0);
+    var bound_hh = Math.min(my + Math.round(bh/2),canvas_m.height) - bound_yy;
+
+    if ( bound_ww < 1 || bound_hh < 1 ) {
+	return false;
+    }
+    var raw_m = _context_m.getImageData(bound_xx,bound_yy,bound_ww,bound_hh);
+    var result_m = raw_m.data;
+    var raw_p = _context_p.getImageData(bound_xx,bound_yy,bound_ww,bound_hh);
+    var result_p = raw_p.data;
+
+    var real = fftData.real;
+    var imag = fftData.imag;
+
+    for ( var bj = 0, r_index = 0; bj < bh; ++bj ) {
+	var bj_orig = bj - (bh-1)/2;
+	var yy = my + Math.round(bj_orig - 0.5);
+	if ( 0 <= yy && yy < canvas_m.height ) {
+	    for ( var bi = 0; bi < bw; ++bi ) {
+		var bi_orig = bi - (bw-1)/2;
+		var xx = mx + Math.round(bi_orig - 0.5);
+		if ( 0 <= xx && xx < canvas_m.width ) {
+		    var bit = Math.round(
+				 __transformedX( _transform, bi_orig, bj_orig )
+				 + (bw-1)/2
+			      );
+		    var bjt = Math.round(
+				 __transformedY( _transform, bi_orig, bj_orig )
+				 + (bh-1)/2
+			      );
+		    var index = ( yy * canvas_m.width + xx ) * 4;
+		    paint_mode( real, imag, result_m, result_p,
+				index, r_index,
+				paint_color_r, paint_color_i,
+				paint_opacity * paint_brush[bjt][bit] );
+		    r_index += 4;
+		}
+	    }
+	}
+    }
+
+    _context_m.putImageData( raw_m, bound_xx, bound_yy );
+    _context_p.putImageData( raw_p, bound_xx, bound_yy );
+
+    return true;
+}
+
 function paintAtMouse( _event ) {
     var canvas_m = document.getElementById( 'canvas_m' );
     var canvas_p = document.getElementById( 'canvas_p' );
@@ -235,48 +376,14 @@ function paintAtMouse( _event ) {
     var canvas = _event.target;
     var rect = canvas.getBoundingClientRect();
 
-    var bh = paint_brush.length;
-    var bw = paint_brush[0].length;
     var mx = Math.round(_event.clientX - rect.left);
     var my = Math.round(_event.clientY - rect.top);
 
-    var bound_xx = Math.max( mx - Math.round(bw/2), 0 );
-    var bound_ww = Math.min( mx + Math.round(bw/2), canvas.width ) - bound_xx;
-    var bound_yy = Math.max( my - Math.round(bh/2), 0 );
-    var bound_hh = Math.min( my + Math.round(bh/2), canvas.height ) - bound_yy;
-
-    if ( bound_ww < 1 || bound_hh < 1 ) {
-	return false;
-    }
-    var raw_m = context_m.getImageData(bound_xx,bound_yy,bound_ww,bound_hh);
-    var result_m = raw_m.data;
-    var raw_p = context_p.getImageData(bound_xx,bound_yy,bound_ww,bound_hh);
-    var result_p = raw_p.data;
-
-    var real = fftData.real;
-    var imag = fftData.imag;
-
-    for ( var bj = 0, r_index = 0; bj < bh; ++bj ) {
-	var yy = my + bj - Math.round(bh/2);
-	if ( 0 <= yy && yy < canvas.height ) {
-	    var yoff = yy * canvas.width * 4;
-
-	    for ( var bi = 0; bi < bw; ++bi ) {
-		var xx = mx + bi - Math.round(bw/2);
-		if ( 0 <= xx && xx < canvas.width ) {
-		    var index = yoff + xx * 4;
-		    paint_mode( real, imag, result_m, result_p,
-				index, r_index,
-				paint_color_r, paint_color_i,
-				paint_opacity * paint_brush[bj][bi] );
-		    r_index += 4;
-		}
-	    }
-	}
+    for ( var ii=0; ii < transforms.length; ++ii ) {
+	__paintAtPoint( canvas_m, canvas_p, context_m, context_p,
+			mx, my, transforms[ii] );
     }
 
-    context_m.putImageData( raw_m, bound_xx, bound_yy );
-    context_p.putImageData( raw_p, bound_xx, bound_yy );
     return true;
 }
 
