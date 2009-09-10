@@ -111,7 +111,7 @@ function updatePaintColor( _hsv, _rgb, _patchId ) {
 }
 
 function selectHueAndSaturation( _ctrl, _real, _event ) {
-    var rect = _ctrl.getBoundingClientRect();
+    var rect = __getBoundingClientRect( _ctrl );
     var xx = Math.round(_event.clientX - rect.left - _ctrl.width/2);
     var yy = Math.round(_event.clientY - rect.top  - _ctrl.height/2);
 
@@ -374,7 +374,7 @@ function paintAtMouse( _event ) {
     }
 
     var canvas = _event.target;
-    var rect = canvas.getBoundingClientRect();
+    var rect = __getBoundingClientRect( canvas );
 
     var mx = Math.round(_event.clientX - rect.left);
     var my = Math.round(_event.clientY - rect.top);

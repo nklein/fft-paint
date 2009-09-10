@@ -34,4 +34,33 @@ function __clampPhase( _rr, _ii ) {
     return vv;
 }
 
+function __recursivelyGetClientOffset( _ctrl, _rect ) {
+    if ( _ctrl ) {
+	__recursivelyGetClientOffset( _ctrl.offsetParent, _rect );
+	_rect.top += _ctrl.offsetTop;
+	_rect.left += _ctrl.offsetLeft;
+    }
+}
+
+function __getBoundingClientRect( _ctrl ) {
+    if ( _ctrl.getBoundingClientRect ) {
+	return _ctrl.getBoundingClientRect();
+    }
+    else {
+	var rect = {};
+
+	rect.left = 0;
+	rect.top = 0;
+
+	__recursivelyGetClientOffset( _ctrl, rect );
+
+	rect.width = _ctrl.width;
+	rect.height = _ctrl.height;
+	rect.right = rect.left + _ctrl.width;
+	rect.bottom = rect.top + _ctrl.height;
+
+	return rect;
+    }
+}
+
 var modes = { };
