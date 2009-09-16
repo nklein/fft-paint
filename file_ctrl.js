@@ -9,7 +9,9 @@ function __prepareImage( _imgId, _canvasId_m, _canvasId_p ) {
     var img = document.getElementById( _imgId );
     var canvas_m = document.getElementById( _canvasId_m );
     var canvas_p = document.getElementById( _canvasId_p );
-    if ( !img || !canvas_m || !canvas_p ) {
+    var canvas_m_o = document.getElementById( _canvasId_m + '_o' );
+    var canvas_p_o = document.getElementById( _canvasId_p + '_o' );
+    if ( !img || !canvas_m || !canvas_p || !canvas_m_o || !canvas_p_o ) {
 	return false;
     }
 
@@ -35,9 +37,17 @@ function __prepareImage( _imgId, _canvasId_m, _canvasId_p ) {
 
     canvas_m.width = ww;
     canvas_m.height = hh;
+    canvas_m_o.width = ww;
+    canvas_m_o.height = hh;
+    canvas_m.parentNode.style.width = ww;
+    canvas_m.parentNode.style.height = hh;
 
     canvas_p.width = ww;
     canvas_p.height = hh;
+    canvas_p_o.width = ww;
+    canvas_p_o.height = hh;
+    canvas_p.parentNode.style.width = ww;
+    canvas_p.parentNode.style.height = hh;
 
     var context_m = canvas_m.getContext( '2d' );
     var context_p = canvas_p.getContext( '2d' );
@@ -76,7 +86,7 @@ function __prepareImage( _imgId, _canvasId_m, _canvasId_p ) {
     context_m.drawImage( img,  0,  0, img.naturalWidth, img.naturalHeight,
 			      ox, oy, iw,               ih );
 
-    return true;
+    return __clearOverlays();
 }
 
 function changeImage( _url ) {

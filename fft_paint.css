@@ -31,8 +31,19 @@ div#image_side > canvas {
     margin-right: auto;
 }
 
-div#image_side > canvas {
-    background-color: black;
+div#image_side > div.canvas_container {
+    border: solid black 1px;
+    position: relative;
+}
+
+div#image_side > div.canvas_container:first-child {
+    margin-bottom: 8px;
+}
+
+div#image_side > div.canvas_container > canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 div#control_side {

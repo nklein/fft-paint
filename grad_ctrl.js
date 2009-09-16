@@ -5,6 +5,13 @@ var GRAD_ANNULUS = 3;
 
 var gradSelectMode = false;
 var gradCircles = false;
+var gradientPaintMode = false;
+var gradInnerColor_r = false;
+var gradInnerColor_i = false;
+var gradInnerOpacity = false;
+var gradOuterColor_r = false;
+var gradOuterColor_i = false;
+var gradOuterOpacity = false;
 
 function __l0 ( _xx, _yy ) {
     return Math.max( Math.abs( _xx ), Math.abs( _yy ) );
@@ -55,8 +62,18 @@ function gradientClearCircles() {
 function initGradientMode() {
     gradSelectMode = GRAD_INSIDE;
     gradCircles = new Array();
-    gradRadiusFunc = __l1;
-    gradDrawFunc = __drawL1;
+    gradRadiusFunc = __l2;
+    gradDrawFunc = __drawL2;
+
+    gradInnerColor_r = new Array( 0.0, 0.0, 0.0 );
+    gradInnerColor_i = new Array( 0.0, 0.0, 0.0 );
+    gradInnerOpacity = 0.0;
+
+    gradOuterColor_r = new Array( 0.0, 0.0, 0.0 );
+    gradOuterColor_i = new Array( 0.0, 0.0, 0.0 );
+    gradOuterOpacity = 1.0;
+
+    gradientPaintMode = __multiplyPaintMode;
 }
 
 function __drawAllCircles() {
@@ -107,6 +124,67 @@ function gradientMouseOut( _event ) {
     return __drawAllCircles();
 }
 
+function __radiusCmp( a, b ) {
+    return ( a < b ) ? -1 : ( a == b ) ? 0 : 1;
+}
+
+function __gradientFill( _min, _max ) {
+    var canvas_m = document.getElementById( 'canvas_m' );
+    var canvas_p = document.getElementById( 'canvas_p' );
+    if ( !canvas_m || !canvas_p ) {
+	return false;
+    }
+
+    if ( !fftData ) {
+	fftData = __createFFTDataFromCanvas( canvas_m.id, canvas_p.id );
+	if ( !fftData ) {
+	    return false;
+	}
+    }
+
+    var real = fftData.real;
+    var imag = fftData.imag;
+    var ww = fftData.width;
+    var hh = fftData.height;
+
+    var context_m = canvas_m.getContext('2d');
+    var context_p = canvas_p.getContext('2d');
+
+    var raw_m = context_m.getImageData( 0, 0, ww, hh );
+    var result_m = raw_m.data;
+    var raw_p = context_p.getImageData( 0, 0, ww, hh );
+    var result_p = raw_p.data;
+
+    var dr = _max - _min;
+    var cr = new Array( 0.0, 0.0, 0.0 );
+    var ci = new Array( 0.0, 0.0, 0.0 );
+
+    for ( var jj=0; jj < hh; ++jj ) {
+	for ( var ii=0; ii < ww; ++ii ) {
+	    var rr = gradRadiusFunc( ii - ww/2, jj - hh/2 );
+	    if ( _min <= rr && rr <= _max ) {
+		var tt = ( dr == 0 ) ? 1 : ( rr - _min ) / dr;
+		for ( var kk=0; kk < 3; ++kk ) {
+		    cr[kk] = (1.0 - tt) * gradInnerColor_r[kk]
+			+ tt * gradOuterColor_r[kk];
+		    ci[kk] = (1.0 - tt) * gradInnerColor_i[kk]
+			+ tt * gradOuterColor_i[kk];
+		}
+		var opacity = (1.0 - tt) * gradInnerOpacity
+		    + tt * gradOuterOpacity;
+		var index = ( jj * ww + ii ) * 4;
+		gradientPaintMode( real, imag, result_m, result_p,
+				   index, index, cr, ci, opacity );
+	    }
+	}
+    }
+
+    context_m.putImageData( raw_m, 0, 0 );
+    context_p.putImageData( raw_p, 0, 0 );
+
+    return true;
+}
+
 function gradientMouseUp( _event ) {
     var canvas = _event.target;
     var rect = __getBoundingClientRect( canvas );
@@ -124,6 +202,30 @@ function gradientMouseUp( _event ) {
 	gradCircles.length = 0;
     }
     gradCircles.push( rr );
+
+    var circlesNeeded = ( gradSelectMode == GRAD_ANNULUS ) ? 2 : 1;
+    if ( gradCircles.length >= circlesNeeded ) {
+	var rmin;
+	var rmax;
+
+	if ( gradSelectMode == GRAD_INSIDE ) {
+	    rmin = 0;
+	    rmax = gradCircles[0];
+	}
+	else if ( gradSelectMode == GRAD_OUTSIDE ) {
+	    rmin = gradCircles[0];
+	    rmax = gradRadiusFunc( canvas.width/2, canvas.height/2 );
+	}
+	else {
+	    gradCircles.sort( __radiusCmp );
+	    rmin = gradCircles[0];
+	    rmax = gradCircles[1];
+	}
+
+	__gradientFill( rmin, rmax );
+
+	gradCircles.length = 0;
+    }
 
     return __drawAllCircles();
 }

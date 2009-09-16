@@ -1,3 +1,21 @@
+function __clearOverlays() {
+    var overlay_m = document.getElementById( 'canvas_m_o' );
+    var overlay_p = document.getElementById( 'canvas_p_o' );
+    if ( !overlay_m || !overlay_p ) {
+	return false;
+    }
+
+    var context_m = overlay_m.getContext( '2d' );
+    var context_p = overlay_p.getContext( '2d' );
+    if ( !context_m || !context_p ) {
+	return false;
+    }
+
+    context_m.clearRect( 0, 0, overlay_m.width, overlay_m.height );
+    context_p.clearRect( 0, 0, overlay_m.width, overlay_m.height );
+
+    return true;
+}
 
 //
 // select a new control
@@ -14,7 +32,14 @@ function selectTool( _id ) {
 	    if ( tools[ii] == _id ) {
 		ctrl.style.visibility = 'visible';
 		button.src = 'true.png';
+		__clearOverlays();
+		if ( curMode && curMode.leave ) {
+		    curMode.leave();
+		}
 		curMode = modes[ _id ];
+		if ( curMode && curMode.init ) {
+		    curMode.init();
+		}
 	    }
 	    else {
 		ctrl.style.visibility = 'hidden';
@@ -29,6 +54,12 @@ function selectTool( _id ) {
 //
 // handle mouse actions in the canvas if the current mode desires them
 //
+function mouseout( _event ) {
+    var success = curMode && curMode.handleMouseOut
+	                  && curMode.handleMouseOut(_event);
+    return true;
+}
+
 function mousedown( _event ) {
     mouseDown = (_event.which == 1);
     var success = curMode && curMode.handleMouseDown
@@ -62,6 +93,7 @@ function initGUI() {
 	&& setPaintBrush( document.getElementById('default_brush') )
 	&& updatePaintColor( paint_hsv_r, paint_color_r, 'real_color' )
 	&& updatePaintColor( paint_hsv_i, paint_color_i, 'imag_color' )
-	&& reloadTransforms();
+	&& reloadTransforms()
+	&& initGradientMode()
 	;
 }

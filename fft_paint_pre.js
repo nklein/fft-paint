@@ -11,7 +11,7 @@ var curMode = false;
 var fftData = false;
 var mouseDown = false;
 
-var pi = 3.14159265358979323846264338327950288;
+var pi = Math.PI;
 
 function __clampPixel( _rr, _ii ) {
     var vv = Math.round( 255.0 * Math.sqrt( _rr*_rr + _ii*_ii ) );

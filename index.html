@@ -7,6 +7,7 @@
       <script type="text/javascript" src="fft.js"></script>
       <script type="text/javascript" src="fft_ctrl.js"></script>
       <script type="text/javascript" src="paint_ctrl.js"></script>
+      <script type="text/javascript" src="grad_ctrl.js"></script>
     <script type="text/javascript" src="fft_paint.js"></script>
   </head>
   <body onload="return initGUI();">
@@ -15,21 +16,33 @@
 	<tr valign="top">
           <td>
 	    <div id="image_side">
-	      <canvas id="canvas_m" width="256" height="256"
-		      onmousedown="return mousedown(event);"
-		      onmouseup="return mouseup(event);"
-		      onmousemove="return mousemove(event);">
-		Your browser must support the Canvas tag.  Safari, Firefox,
-		Chrome, Opera, and IE 7 or higher should work.
-	      </canvas>
-	      <br />
-	      <canvas id="canvas_p" width="256" height="256"
-		      onmousedown="return mousedown(event);"
-		      onmouseup="return mouseup(event);"
-		      onmousemove="return mousemove(event);">
-		Your browser must support the Canvas tag.  Safari, Firefox,
-		Chrome, Opera, and IE 7 or higher should work.
-	      </canvas>
+	      <div class="canvas_container">
+		<canvas id="canvas_m" width="256" height="256">
+		  Your browser must support the Canvas tag.  Safari, Firefox,
+		  Chrome, Opera, and IE 7 or higher should work.
+		</canvas>
+		<canvas id="canvas_m_o" width="256" height="256"
+			onmouseout="return mouseout(event);"
+			onmousedown="return mousedown(event);"
+			onmouseup="return mouseup(event);"
+			onmousemove="return mousemove(event);">
+		</canvas>
+	      </div>
+	      <div class="canvas_container">
+		<canvas id="canvas_p" width="256" height="256"
+			onmousedown="return mousedown(event);"
+			onmouseup="return mouseup(event);"
+			onmousemove="return mousemove(event);">
+		  Your browser must support the Canvas tag.  Safari, Firefox,
+		  Chrome, Opera, and IE 7 or higher should work.
+		</canvas>
+		<canvas id="canvas_p_o" width="256" height="256"
+			onmouseout="return mouseout(event);"
+			onmousedown="return mousedown(event);"
+			onmouseup="return mouseup(event);"
+			onmousemove="return mousemove(event);">
+		</canvas>
+	      </div>
 	    </div>
 	  </td>
 	  <td>
