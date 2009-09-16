@@ -70,6 +70,7 @@
 		     onclick="return selectTool('gradient_controls');">
 		  <input type="image" id="gradient_controls_button"
 			 src="false.png"  width="64" height="64" border="0" />
+		  <img src="gradient.png" width="64" height="64" border="0" />
 		</div>
 		<div class="tool_bar_button"
 		     onclick="return selectTool('blur_controls');">
@@ -276,7 +277,135 @@
 	      </div>
 	      <div id="gradient_controls" class="controls">
 		<h2>Gradient</h2>
-		<p>Coming soon...</p>
+		<strong>Inner Color (Hue/Sat and Value):</strong><br />
+		<table width="100%">
+		  <tr>
+		    <td>
+		      <strong>Real:</strong><br />
+		      <canvas width="32" height="32" id="in_real_color">
+			Real color
+		      </canvas>
+		      &nbsp;&nbsp;&nbsp;
+		      <img src="color_wheel.png" width="64" height="64"
+			   align="center"
+			   onclick="gradSelectHueSat(this,true,true,event);"
+			   />
+		      <input type="text" value="1.0"
+			     onchange="gradSelectLum(this,true,true);"
+			     size="5" />
+		    </td>
+		    <td>
+		      <strong>Imaginary:</strong><br />
+		      <canvas width="32" height="32" id="in_imag_color">
+			Imaginary color
+		      </canvas>
+		      &nbsp;&nbsp;&nbsp;
+		      <img src="color_wheel.png" width="64" height="64"
+			   align="center"
+			   onclick="gradSelectHueSat(this,false,true,event);"
+			   />
+		      <input type="text" value="0.0"
+			     onchange="gradSelectLum(this,false,true);"
+			     size="5" />
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <strong>Opacity:</strong>
+		      <input type="text" value="1.0" size="5"
+			     onchange="gradSelectOpacity(this,true);" />
+		    </td>
+		  </tr>
+		</table>
+		<strong>Outer Color (Hue/Sat and Value):</strong><br />
+		<table width="100%">
+		  <tr>
+		    <td>
+		      <strong>Real:</strong><br />
+		      <canvas width="32" height="32" id="out_real_color">
+			Real color
+		      </canvas>
+		      &nbsp;&nbsp;&nbsp;
+		      <img src="color_wheel.png" width="64" height="64"
+			   align="center"
+			   onclick="gradSelectHueSat(this,true,false,event);"
+			   />
+		      <input type="text" value="1.0"
+			     onchange="gradSelectLum(this,true,false);"
+			     size="5" />
+		    </td>
+		    <td>
+		      <strong>Imaginary:</strong><br />
+		      <canvas width="32" height="32" id="out_imag_color">
+			Imaginary color
+		      </canvas>
+		      &nbsp;&nbsp;&nbsp;
+		      <img src="color_wheel.png" width="64" height="64"
+			   align="center"
+			   onclick="gradSelectHueSat(this,false,false,event);"
+			   />
+		      <input type="text" value="0.0"
+			     onchange="gradSelectLum(this,false,false);"
+			     size="5" />
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <strong>Opacity:</strong>
+		      <input type="text" value="1.0" size="5"
+			     onchange="gradSelectOpacity(this,false);" />
+		    </td>
+		  </tr>
+		  <tr valign="top">
+		    <td>
+		      <label for="grad_mode"
+			     ><strong>Gradient Mode:</strong></label>
+		      <br />
+		      <select name="grad_mode"
+			      onchange="gradSelectPaintMode(this.options[this.selectedIndex].value);">
+			<option value="normal"
+				selected="selected">Normal</option>
+			<option value="add">Add</option>
+			<option value="multiply">Multiply</option>
+		      </select>
+		    </td>
+		    <td>&nbsp;</td>
+		  </tr>
+		  <tr valign="top"
+		      <td>
+			<strong>Gradient Area:</strong>
+			<br />
+			<img src="inside.png"
+			     style="border: solid blue 2px;"
+			onclick="return gradSetSelectMode(this,GRAD_INSIDE);"
+			   />
+			<img src="outside.png"
+			   style="border: solid black 2px;"
+			onclick="return gradSetSelectMode(this,GRAD_OUTSIDE);"
+			   />
+			<img src="annulus.png"
+			   style="border: solid black 2px;"
+			onclick="return gradSetSelectMode(this,GRAD_ANNULUS);"
+			   />
+		      </td>
+		      <td>
+			<strong>Radius Metric:</strong>
+			<br />
+			<img src="l0.png"
+			     style="border: solid black 2px;"
+			     onclick="return gradSetMetric(this,0);"
+			     />
+			<img src="l1.png"
+			     style="border: solid black 2px;"
+			     onclick="return gradSetMetric(this,1);"
+			     />
+			<img src="l2.png"
+			     style="border: solid blue 2px;"
+			     onclick="return gradSetMetric(this,2);"
+			     />
+		      </td>
+		    </tr>
+		</table>
 	      </div>
 	      <div id="blur_controls" class="controls">
 		<h2>Blur</h2>

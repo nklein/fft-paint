@@ -6,9 +6,15 @@ var GRAD_ANNULUS = 3;
 var gradSelectMode = false;
 var gradCircles = false;
 var gradientPaintMode = false;
+
+var gradInnerHSV_r = false;
+var gradInnerHSV_i = false;
 var gradInnerColor_r = false;
 var gradInnerColor_i = false;
 var gradInnerOpacity = false;
+
+var gradOuterHSV_r = false;
+var gradOuterHSV_i = false;
 var gradOuterColor_r = false;
 var gradOuterColor_i = false;
 var gradOuterOpacity = false;
@@ -59,21 +65,70 @@ function gradientClearCircles() {
     gradCircles = new Array();
 }
 
+function gradSetSelectMode( _this, _mode ) {
+    if ( _mode == GRAD_INSIDE
+	 || _mode == GRAD_OUTSIDE
+	 || _mode == GRAD_ANNULUS ) {
+	gradSelectMode = _mode;
+	if ( _this ) {
+	    __highlightCurrent( _this );
+	}
+	return true;
+    }
+    else {
+	return false;
+    }
+}
+
+function gradSetMetric( _this, _metric ) {
+    if ( _metric == 0 ) {
+	gradRadiusFunc = __l0;
+	gradDrawFunc = __drawL0;
+    }
+    else if ( _metric == 1 ) {
+	gradRadiusFunc = __l1;
+	gradDrawFunc = __drawL1;
+    }
+    else if ( _metric == 2 ) {
+	gradRadiusFunc = __l2;
+	gradDrawFunc = __drawL2;
+    }
+    else {
+	return false;
+    }
+
+    if ( _this ) {
+	__highlightCurrent( _this );
+    }
+	
+    __drawAllCircles();
+    return true;
+}
+
 function initGradientMode() {
-    gradSelectMode = GRAD_INSIDE;
-    gradCircles = new Array();
-    gradRadiusFunc = __l2;
-    gradDrawFunc = __drawL2;
+    gradSetSelectMode( false, GRAD_INSIDE );
+    gradSetMetric( false, 2 );
 
-    gradInnerColor_r = new Array( 0.0, 0.0, 0.0 );
-    gradInnerColor_i = new Array( 0.0, 0.0, 0.0 );
-    gradInnerOpacity = 0.0;
+    gradientClearCircles();
 
-    gradOuterColor_r = new Array( 0.0, 0.0, 0.0 );
-    gradOuterColor_i = new Array( 0.0, 0.0, 0.0 );
+    gradInnerHSV_r = new Array( 0.0, 0.0, 1.0 );
+    gradInnerHSV_i = new Array( 0.0, 0.0, 0.0 );
+    gradInnerColor_r = new Array();
+    gradInnerColor_i = new Array();
+    gradInnerOpacity = 1.0;
+
+    gradOuterHSV_r = new Array( 0.0, 0.0, 1.0 );
+    gradOuterHSV_i = new Array( 0.0, 0.0, 0.0 );
+    gradOuterColor_r = new Array();
+    gradOuterColor_i = new Array();
     gradOuterOpacity = 1.0;
 
-    gradientPaintMode = __multiplyPaintMode;
+    updatePaintColor( gradInnerHSV_r, gradInnerColor_r, 'in_real_color' );
+    updatePaintColor( gradInnerHSV_i, gradInnerColor_i, 'in_imag_color' );
+    updatePaintColor( gradOuterHSV_r, gradOuterColor_r, 'out_real_color' );
+    updatePaintColor( gradOuterHSV_i, gradOuterColor_i, 'out_imag_color' );
+
+    gradientPaintMode = __normalPaintMode;
 }
 
 function __drawAllCircles() {
@@ -116,6 +171,113 @@ function __drawAllCircles() {
 
     context_p.restore();
     context_m.restore();
+
+    return true;
+}
+
+function gradSelectHueSat( _ctrl, _real, _inside, _event ) {
+    var rect = __getBoundingClientRect( _ctrl );
+    var xx = Math.round(_event.clientX - rect.left - _ctrl.width/2);
+    var yy = Math.round(_event.clientY - rect.top  - _ctrl.height/2);
+
+    var hh = Math.round( 180.0 * Math.atan2( yy, xx ) / pi );
+    var rr = Math.sqrt( xx*xx + yy*yy ) / (_ctrl.width/2);
+    var ss = Math.min( rr, 1.0 );
+
+    var hsv =	_inside
+	? ( _real ? gradInnerHSV_r : gradInnerHSV_i )
+	: ( _real ? gradOuterHSV_r : gradOuterHSV_i )
+	;
+    var rgb =	_inside
+	? ( _real ? gradInnerColor_r : gradInnerColor_i )
+	: ( _real ? gradOuterColor_r : gradOuterColor_i )
+	;
+    var patch = _inside
+	? ( _real ? 'in_real_color'  : 'in_imag_color' )
+	: ( _real ? 'out_real_color' : 'out_imag_color' )
+	;
+
+    hsv[0] = hh;
+    hsv[1] = ss;
+
+    updatePaintColor( hsv, rgb, patch );
+
+    return true;
+}
+
+function gradSelectLum( _ctrl, _real, _inside ) {
+    var ll = parseFloat( _ctrl.value ) + 0.0;
+    _ctrl.value = ll;
+
+    var hsv =	_inside
+	? ( _real ? gradInnerHSV_r : gradInnerHSV_i )
+	: ( _real ? gradOuterHSV_r : gradOuterHSV_i )
+	;
+    var rgb =	_inside
+	? ( _real ? gradInnerColor_r : gradInnerColor_i )
+	: ( _real ? gradOuterColor_r : gradOuterColor_i )
+	;
+    var patch = _inside
+	? ( _real ? 'in_real_color'  : 'in_imag_color' )
+	: ( _real ? 'out_real_color' : 'out_imag_color' )
+	;
+
+    hsv[2] = ll;
+
+    updatePaintColor( hsv, rgb, patch );
+
+    return true;
+}
+
+function gradSelectOpacity( _ctrl, _inner ) {
+    var oo = parseFloat( _ctrl.value ) + 0.0;
+    _ctrl.value = oo;
+    if ( _inner ) {
+	gradInnerOpacity = oo;
+    }
+    else {
+	gradOuterOpacity = oo;
+    }
+    return true;
+}
+
+function __highlightCurrent( _this ) {
+    if ( !_this ) {
+	return false;
+    }
+
+    var parent = _this.parentNode;
+    if ( ! parent ) {
+	return false;
+    }
+
+    var sibs = parent.children;
+    for ( var ii = 0; ii < sibs.length; ++ii ) {
+	var sib = sibs[ ii ];
+	if ( sib.tagName == "IMG" ) {
+	    if ( sib == _this ) {
+		sib.style.border = 'solid blue 2px';
+	    }
+	    else {
+		sib.style.border = 'solid black 2px';
+	    }
+	}
+    }
+}
+
+function gradSelectPaintMode( _mode ) {
+    if ( _mode == 'normal' ) {
+	gradientPaintMode = __normalPaintMode;
+    }
+    else if ( _mode == 'add' ) {
+	gradientPaintMode = __addPaintMode
+    }
+    else if ( _mode == 'multiply' ) {
+	gradientPaintMode = __multiplyPaintMode
+    }
+    else {
+	return false;
+    }
 
     return true;
 }
