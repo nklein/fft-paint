@@ -134,7 +134,7 @@ function selectHueAndSaturation( _ctrl, _real, _event ) {
 }
 
 function selectLuminance( _ctrl, _real ) {
-    var ll = parseFloat( _ctrl.value ) + 0.0;
+    var ll = eval( _ctrl.value ) + 0.0;
     _ctrl.value = ll;
     if ( _real ) {
 	paint_hsv_r[ 2 ] = ll;
@@ -148,7 +148,7 @@ function selectLuminance( _ctrl, _real ) {
 }
 
 function selectOpacity( _ctrl ) {
-    var oo = parseFloat( _ctrl.value ) + 0.0;
+    var oo = eval( _ctrl.value ) + 0.0;
     _ctrl.value = oo;
     paint_opacity = oo;
     return true;

@@ -129,6 +129,8 @@ function initGradientMode() {
     updatePaintColor( gradOuterHSV_i, gradOuterColor_i, 'out_imag_color' );
 
     gradientPaintMode = __normalPaintMode;
+
+    return true;
 }
 
 function __drawAllCircles() {
@@ -206,7 +208,7 @@ function gradSelectHueSat( _ctrl, _real, _inside, _event ) {
 }
 
 function gradSelectLum( _ctrl, _real, _inside ) {
-    var ll = parseFloat( _ctrl.value ) + 0.0;
+    var ll = eval( _ctrl.value ) + 0.0;
     _ctrl.value = ll;
 
     var hsv =	_inside
@@ -230,7 +232,7 @@ function gradSelectLum( _ctrl, _real, _inside ) {
 }
 
 function gradSelectOpacity( _ctrl, _inner ) {
-    var oo = parseFloat( _ctrl.value ) + 0.0;
+    var oo = eval( _ctrl.value ) + 0.0;
     _ctrl.value = oo;
     if ( _inner ) {
 	gradInnerOpacity = oo;

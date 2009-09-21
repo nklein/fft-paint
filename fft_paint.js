@@ -95,5 +95,6 @@ function initGUI() {
 	&& updatePaintColor( paint_hsv_i, paint_color_i, 'imag_color' )
 	&& reloadTransforms()
 	&& initGradientMode()
+	&& initBlurMode()
 	;
 }
